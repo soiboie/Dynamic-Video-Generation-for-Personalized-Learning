@@ -1,0 +1,44 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    text-align: center;
+}
+
+#prompt-form {
+    margin: 20px 0;
+}
+
+#prompt {
+    width: 300px;
+    padding: 5px;
+}
+
+#num-images {
+    width: 60px;
+    padding: 5px;
+    margin-left: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    margin-left: 10px;
+}
+
+#image-container {
+    margin-top: 20px;
+}
+
+#images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#images img {
+    max-width: 300px;
+    margin: 10px;
+}
+
+#status {
+    color: #666;
+}

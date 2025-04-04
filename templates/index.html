@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Education Project</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        form {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        label {
+            margin-right: 5px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="number"] {
+            padding: 8px;
+            width: 60px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #image-container {
+            margin-top: 30px;
+        }
+        #images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        #images img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #status {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Revolutionizing Student Education with AI</h1>
+    
+    <form id="prompt-form">
+        <label for="prompt">Enter your prompt:</label>
+        <input type="text" id="prompt" name="prompt" required>
+        
+        <label for="num-images">Number of images:</label>
+        <input type="number" id="num-images" name="numImages" min="1" max="10" value="3" required>
+        
+        <button type="submit">Generate</button>
+    </form>
+    
+    <div id="image-container">
+        <div id="images"></div>
+        <p id="status">Waiting for input...</p>
+    </div>
+
+    <script>
+        document
+          .getElementById("prompt-form")
+          .addEventListener("submit", async function (event) {
+            event.preventDefault();
+            
+            // Get form values
+            const prompt = document.getElementById("prompt").value;
+            const numImages = document.getElementById("num-images").value;
+            const status = document.getElementById("status");
+            const imagesDiv = document.getElementById("images");
+
+            // Update status
+            status.textContent = "Generating content...";
+            imagesDiv.innerHTML = ""; // Clear previous images
+            
+            console.log("Sending request with prompt:", prompt, "and numImages:", numImages);
+
+            try {
+              // Use relative URL to avoid CORS issues
+              const response = await fetch("/generate", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  prompt: prompt,
+                  numImages: parseInt(numImages),
+                }),
+              });
+
+              console.log("Response status:", response.status);
+              
+              // Better error handling
+              if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Server error:", errorText);
+                throw new Error(`Failed to generate content: ${response.status} ${errorText}`);
+              }
+
+              // Parse JSON response safely
+              const data = await response.json();
+              console.log("Received data:", data);
+              
+              if (data.imageUrls && data.imageUrls.length > 0) {
+                data.imageUrls.forEach((url) => {
+                  const img = document.createElement("img");
+                  img.src = url;
+                  img.className = "generated-image";
+                  img.alt = "AI generated image for: " + prompt;
+                  imagesDiv.appendChild(img);
+                });
+                status.textContent = "Content generated successfully!";
+              } else {
+                throw new Error("No images were returned from the server");
+              }
+            } catch (error) {
+              console.error("Detailed error:", error);
+              status.textContent = "Error generating content: " + error.message;
+            }
+          });
+    </script>
+</body>
+</html>
