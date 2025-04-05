@@ -3,154 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Education Project</title>
+    <title>AI Learning Assistant</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f0f2f5;
         }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
         h1 {
-            color: #333;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+            color: #1a73e8;
+            text-align: center;
+            margin-bottom: 30px;
         }
-        form {
-            margin: 20px 0;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
+
+        .input-section {
+            margin-bottom: 30px;
         }
-        label {
-            margin-right: 5px;
+
+        #query {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dfe1e5;
+            border-radius: 24px;
+            font-size: 16px;
+            margin-bottom: 15px;
         }
-        input[type="text"] {
-            padding: 8px;
-            width: 300px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        input[type="number"] {
-            padding: 8px;
-            width: 60px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
+
         button {
-            background-color: #4CAF50;
+            background: #1a73e8;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            padding: 12px 24px;
+            border-radius: 24px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            width: 100%;
         }
+
         button:hover {
-            background-color: #45a049;
+            background: #1557b0;
         }
-        #image-container {
+
+        .response-section {
             margin-top: 30px;
         }
-        #images {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 15px;
+
+        #transcript {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.6;
+            min-height: 150px;
+            white-space: pre-wrap;
         }
-        #images img {
-            max-width: 100%;
-            height: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+        audio {
+            width: 100%;
+            margin-top: 20px;
         }
-        #status {
-            margin-top: 10px;
-            color: #666;
-            font-style: italic;
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <h1>Revolutionizing Student Education with AI</h1>
-    
-    <form id="prompt-form">
-        <label for="prompt">Enter your prompt:</label>
-        <input type="text" id="prompt" name="prompt" required>
+    <div class="container">
+        <h1>AI Learning Assistant</h1>
         
-        <label for="num-images">Number of images:</label>
-        <input type="number" id="num-images" name="numImages" min="1" max="10" value="3" required>
-        
-        <button type="submit">Generate</button>
-    </form>
-    
-    <div id="image-container">
-        <div id="images"></div>
-        <p id="status">Waiting for input...</p>
+        <form method="POST">
+            <div class="input-section">
+                <input type="text" 
+                       id="query" 
+                       name="query" 
+                       placeholder="Enter your learning question here..."
+                       required>
+                <button type="submit">Generate Explanation</button>
+            </div>
+        </form>
+
+        <div class="response-section">
+            {% if transcript %}
+            <div id="transcript">{{ transcript }}</div>
+            <audio controls {% if not audio_file %}class="hidden"{% endif %}>
+                {% if audio_file %}
+                <source src="{{ audio_file }}" type="audio/mpeg">
+                {% endif %}
+                Your browser does not support the audio element.
+            </audio>
+            {% endif %}
+        </div>
     </div>
-
-    <script>
-        document
-          .getElementById("prompt-form")
-          .addEventListener("submit", async function (event) {
-            event.preventDefault();
-            
-            // Get form values
-            const prompt = document.getElementById("prompt").value;
-            const numImages = document.getElementById("num-images").value;
-            const status = document.getElementById("status");
-            const imagesDiv = document.getElementById("images");
-
-            // Update status
-            status.textContent = "Generating content...";
-            imagesDiv.innerHTML = ""; // Clear previous images
-            
-            console.log("Sending request with prompt:", prompt, "and numImages:", numImages);
-
-            try {
-              // Use relative URL to avoid CORS issues
-              const response = await fetch("/generate", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  prompt: prompt,
-                  numImages: parseInt(numImages),
-                }),
-              });
-
-              console.log("Response status:", response.status);
-              
-              // Better error handling
-              if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Server error:", errorText);
-                throw new Error(`Failed to generate content: ${response.status} ${errorText}`);
-              }
-
-              // Parse JSON response safely
-              const data = await response.json();
-              console.log("Received data:", data);
-              
-              if (data.imageUrls && data.imageUrls.length > 0) {
-                data.imageUrls.forEach((url) => {
-                  const img = document.createElement("img");
-                  img.src = url;
-                  img.className = "generated-image";
-                  img.alt = "AI generated image for: " + prompt;
-                  imagesDiv.appendChild(img);
-                });
-                status.textContent = "Content generated successfully!";
-              } else {
-                throw new Error("No images were returned from the server");
-              }
-            } catch (error) {
-              console.error("Detailed error:", error);
-              status.textContent = "Error generating content: " + error.message;
-            }
-          });
-    </script>
 </body>
 </html>
