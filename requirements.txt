@@ -1,0 +1,5 @@
+flask
+gunicorn
+gtts
+google-generativeai
+python-dotenv
