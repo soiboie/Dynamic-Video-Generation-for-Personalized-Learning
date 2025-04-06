@@ -82,16 +82,33 @@
     <div class="container">
         <h1>AI Learning Assistant</h1>
         
-        <form method="POST">
-            <div class="input-section">
-                <input type="text" 
-                       id="query" 
-                       name="query" 
-                       placeholder="Enter your learning question here..."
-                       required>
-                <button type="submit">Generate Explanation</button>
-            </div>
-        </form>
+    <form method="POST">
+    <div class="input-section">
+        <label for="context">Educational Context:</label>
+        <input type="text" 
+               id="context" 
+               name="context" 
+               placeholder="Enter the educational topic (e.g., Physics, History)" 
+               required>
+        
+        <label for="standard">Student Grade:</label>
+        <select id="standard" name="standard" required>
+            <option value="" disabled selected>Select grade</option>
+            {% for grade in range(1, 13) %}
+            <option value="{{ grade }}">{{ grade }}th Grade</option>
+            {% endfor %}
+        </select>
+        
+        <label for="query">Your Question:</label>
+        <input type="text" 
+               id="query" 
+               name="query" 
+               placeholder="Enter your learning question here..." 
+               required>
+        
+        <button type="submit">Generate Explanation</button>
+    </div>
+</form>
 
         <div class="response-section">
             {% if transcript %}
