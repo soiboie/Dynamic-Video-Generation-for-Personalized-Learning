@@ -1,11 +1,10 @@
 from flask import Flask, render_template, request
+
+app = Flask(__name__) 
 import google.generativeai as genai
 from gtts import gTTS
 import os
 
-app = Flask(__name__)
-
-# Configure the Generative AI API
 genai.configure(api_key="AIzaSyC4NQ7jjvgTXHXjq4wTyMwkpZR9PrYSzLk")
 model = genai.GenerativeModel('gemini-1.5-pro')
 
@@ -15,10 +14,18 @@ def index():
     audio_file = ""
     if request.method == "POST":
         user_input = request.form.get("query")
+        educational_context = request.form.get("context")
+        student_standard = request.form.get("standard")  # New field for student standard
         if user_input:
-            # Start a chat and send a message
+            # Start a chat with an educational context and student standard
+            full_prompt = (
+                f"You are an educational tutor. The topic is: {educational_context}. "
+                f"Provide a detailed transcript for a 2-3 minute video."
+                f"The explanation should be tailored for a student of {student_standard} standard. "
+                f"Now, answer this question: {user_input}"
+            )
             chat = model.start_chat(history=[])
-            response = chat.send_message(user_input)
+            response = chat.send_message(full_prompt)
             transcript = response.text
 
             # Convert the response text to speech using gTTS
