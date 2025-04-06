@@ -1,4 +1,4 @@
-# Dynamic-Video-Generation-for-Personalized-Learning
+
 # 🎓 Dynamic Video Generation for Personalized Learning
 
 This project dynamically generates educational video transcripts tailored to a student's learning level and subject. It uses **Generative AI** to produce a personalized explanation and **gTTS** to convert the response into speech—ideal for creating educational videos or audio lessons.
