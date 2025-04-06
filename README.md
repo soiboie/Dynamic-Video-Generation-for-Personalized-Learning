@@ -34,6 +34,10 @@ cd Dynamic-Video-Generation-for-Personalized-Learning
 
 pip install -r requirements.txt
 ```
+# Run the app
+```bash
+python app.py
+```
 # Project Structure 
 .
 ├── app.py                  # Main Flask app
@@ -43,3 +47,7 @@ pip install -r requirements.txt
 │   └── response_audio.mp3  # Generated audio output
 ├── requirements.txt
 └── README.md
+
+
+
+
