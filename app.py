@@ -3,9 +3,13 @@ from flask import Flask, render_template, request
 app = Flask(__name__) 
 import google.generativeai as genai
 from gtts import gTTS
+from dotenv import load_dotenv
 import os
 
-genai.configure(api_key="AIzaSyC4NQ7jjvgTXHXjq4wTyMwkpZR9PrYSzLk")
+load_dotenv()
+api_key = os.getenv("GEMINI_API_KEY")
+
+genai.configure(api_key)
 model = genai.GenerativeModel('gemini-1.5-pro')
 
 @app.route("/", methods=["GET", "POST"])
